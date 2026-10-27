@@ -5,7 +5,7 @@ to a tool your team already uses, through that tool's own command-line program a
 
 The first plugins connect issue trackers. You pick issues in Otaq (**New ticket ▾ → Import**) and they become Backlog
 tickets, with the issue's key as their External ID; Otaq can refresh them later and pull new ones in the background.
-More kinds of plugins will follow, such as notifications, pull request providers, CI status and context for agents.
+More kinds will follow: see [Planned plugins](#planned-plugins).
 
 How plugins work, and every rule below, is described in Otaq's
 [docs/marketplace.md](https://github.com/otaq-io/otaq/blob/main/docs/marketplace.md).
@@ -18,6 +18,33 @@ How plugins work, and every rule below, is described in Otaq's
 
 Install them from **Settings → Plugins** in Otaq. Each one shows a consent screen first, listing every command line it
 can run.
+
+## Planned plugins
+
+None of these is built yet, and the list will change. The manifest's `provides:` field already has room for each kind;
+Otaq v1 runs `ticket_source` only. Proposals and pull requests are welcome, starting with the ticket sources, which
+need nothing new from Otaq.
+
+| Kind (`provides:`) | What it does | Examples |
+|---|---|---|
+| `ticket_source` | Imports work as Backlog tickets, refreshes it and pulls new items (available now). | Linear, GitLab Issues, YouTrack, ClickUp, Shortcut; Sentry and Datadog errors; Dependabot, Snyk and GitHub code scanning alerts |
+| `context` | Pulls pages or designs linked from a ticket into it, for the agent to read. | Notion, Confluence, Google Docs, Figma |
+| `notify` | Tells you when a ticket needs you or is ready for review. | Slack, Microsoft Teams, Discord, ntfy |
+| `pr_provider` | Opens and follows pull requests on more hosts. | GitLab, Bitbucket, Gitea |
+| `ci_status` | Shows CI results on a ticket before you review it. | GitHub Actions, Azure Pipelines, GitLab CI, CircleCI |
+| `preview` | Starts a preview environment for a ticket's worktree. | Vercel, Netlify, Docker Compose |
+| Write-back | Updates the tracker as a ticket moves: its state, a comment with the PR link. | Jira, Azure DevOps, GitHub Issues |
+
+Kinds that act on Otaq's events (`notify`, `pr_provider`, `ci_status`, `preview` and write-back) do more than read,
+so they need a later plugin protocol and more trust on the consent screen; they will be designed before they are
+built.
+
+Content, which runs no code, will get its own top-level folders next to `plugins/`, each with its own index:
+
+- `skills/`: skills for Otaq's agents.
+- `flows/`: flow presets, such as a test-first flow or a docs-only flow.
+- `instructions/`: agent instruction packs, such as a house style for a language.
+- `themes/`: Otaq themes.
 
 ## Layout
 
@@ -32,7 +59,7 @@ plugins/
     README.md
     LICENSE
     tests/fixtures/     recorded CLI output and the issues Otaq should map it to
-skills/                 later
+skills/  flows/  …      later (see Planned plugins)
 ```
 
 ## Adding a plugin
