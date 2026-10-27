@@ -1,13 +1,16 @@
 # Otaq marketplace
 
-Plugins for [Otaq](https://github.com/otaq-io/otaq), the kanban board that runs coding agents. A plugin connects Otaq
-to an issue tracker: you pick issues on Otaq's board (**New ticket ▾ → Import**) and they become Backlog tickets, with
-the issue's key as their External ID. Otaq can refresh them later and pull new ones in the background.
+Plugins for [Otaq](https://github.com/otaq-io/otaq), which runs coding agents on your tickets. A plugin connects Otaq
+to a tool your team already uses, through that tool's own command-line program and your login: Otaq stores no tokens.
+
+The first plugins connect issue trackers. You pick issues in Otaq (**New ticket ▾ → Import**) and they become Backlog
+tickets, with the issue's key as their External ID; Otaq can refresh them later and pull new ones in the background.
+More kinds of plugins will follow, such as notifications, pull request providers, CI status and context for agents.
 
 How plugins work, and every rule below, is described in Otaq's
 [docs/marketplace.md](https://github.com/otaq-io/otaq/blob/main/docs/marketplace.md).
 
-| Plugin | Tracker | Uses |
+| Plugin | Connects | Uses |
 |---|---|---|
 | [`github-issues`](plugins/github-issues) | GitHub Issues | `gh` |
 | [`jira`](plugins/jira) | Jira Cloud | `acli` (Atlassian CLI) |
@@ -36,8 +39,8 @@ skills/                 later
 
 Open a pull request with a new folder under `plugins/`. A plugin:
 
-- is **declarative**: `plugin.yaml` names the vendor CLIs it runs and how their JSON output becomes issues. Protocol 1
-  has no scripts.
+- is **declarative**: `plugin.yaml` names the vendor CLIs it runs and how their JSON output becomes what Otaq shows
+  (issues, for the ticket sources of protocol 1). Protocol 1 has no scripts.
 - is **open source**: `license:` is an OSI-approved SPDX id or FSL, with a `LICENSE` file in the folder.
 - holds **only text**: the manifest, docs, license and fixtures. No binaries.
 - stores **no tokens**: it relies on the CLI's own login.
