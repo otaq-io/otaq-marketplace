@@ -1,0 +1,72 @@
+# Jira Cloud: import open stories, tasks and bugs as Otaq tickets, through the Atlassian CLI (acli) and its login.
+# Jira Data Center and Server aren't supported: acli works with Jira Cloud.
+id: jira
+name: Jira
+version: 1.0.0
+protocol: 1
+otaq: ">=0.1.0, <2.0.0"
+description: Import Jira Cloud stories, tasks and bugs as tickets, through the Atlassian CLI (acli).
+license: FSL-1.1-MIT
+maintainers: [otaq-io]
+homepage: https://github.com/otaq-io/otaq-marketplace/tree/HEAD/plugins/jira
+provides: [ticket_source]
+capabilities: [import, refresh, auto_pull]
+query_label: JQL (project = PAY AND sprint in openSprints())
+
+requires:
+  - id: acli
+    name: Atlassian CLI
+    check: [acli, --version]
+    login_check: [acli, jira, auth, status]
+    login: [acli, jira, auth, login, --web]
+    install:
+      macos: brew tap atlassian/homebrew-acli && brew install acli
+      linux: https://developer.atlassian.com/cloud/acli/guides/install-linux/
+      windows: https://developer.atlassian.com/cloud/acli/guides/install-windows/
+
+settings:
+  - key: site
+    label: Jira site
+    required: true
+    format: host
+    placeholder: acme.atlassian.net
+  - key: query
+    label: Saved search (JQL)
+    default: "assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC"
+    help: The import dialog starts with it, and auto-pull runs it.
+
+# Epics group work; they are never imported. Sub-tasks, stories, tasks and bugs are work items.
+types:
+  default: work
+  containers: [Epic]
+
+issue_url: "https://{settings.site}/browse/{key}"
+
+commands:
+  search:
+    run: [acli, jira, workitem, search, --jql, "{query}", --limit, "{limit}",
+          --fields, "key,summary,status,issuetype,priority,parent", --json]
+    map:
+      items: "$"
+      id: key
+      key: key
+      title: fields.summary
+      type: fields.issuetype.name
+      state: fields.status.name
+      state_category: { from: fields.status.statusCategory.key, via: { done: done, new: open, indeterminate: open } }
+      parent: fields.parent.key
+      priority: fields.priority.name
+  fetch:
+    run: [acli, jira, workitem, view, "{id}",
+          --fields, "key,summary,description,status,issuetype,priority,parent", --json]
+    map:
+      item: "$"
+      id: key
+      key: key
+      title: fields.summary
+      body: { from: fields.description, transform: adf_to_markdown }
+      type: fields.issuetype.name
+      state: fields.status.name
+      state_category: { from: fields.status.statusCategory.key, via: { done: done, new: open, indeterminate: open } }
+      parent: fields.parent.key
+      priority: fields.priority.name

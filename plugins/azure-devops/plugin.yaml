@@ -1,0 +1,79 @@
+# Azure DevOps Boards: import open user stories, tasks and bugs as Otaq tickets, through the Azure CLI's
+# azure-devops extension and its login.
+id: azure-devops
+name: Azure DevOps Boards
+version: 1.0.0
+protocol: 1
+otaq: ">=0.1.0, <2.0.0"
+description: Import Azure Boards user stories, tasks and bugs as tickets, through the Azure CLI (az boards).
+license: FSL-1.1-MIT
+maintainers: [otaq-io]
+homepage: https://github.com/otaq-io/otaq-marketplace/tree/HEAD/plugins/azure-devops
+provides: [ticket_source]
+capabilities: [import, refresh, auto_pull]
+query_label: WIQL (SELECT [System.Id] FROM workitems WHERE …)
+
+requires:
+  - id: az
+    name: Azure CLI
+    check: [az, --version]
+    login_check: [az, account, show]
+    login: [az, login]
+    install:
+      macos: brew install azure-cli
+      linux: https://learn.microsoft.com/cli/azure/install-azure-cli-linux
+      windows: winget install --id Microsoft.AzureCLI
+    extension:
+      name: azure-devops
+      check: [az, extension, show, --name, azure-devops]
+      install: [az, extension, add, --name, azure-devops]
+
+settings:
+  - key: org
+    label: Organization
+    required: true
+    format: url
+    placeholder: https://dev.azure.com/acme
+  - key: project
+    label: Project
+    required: true
+    scope: project
+    placeholder: Shop
+  - key: query
+    label: Saved search (WIQL)
+    default: "SELECT [System.Id], [System.Title], [System.State], [System.WorkItemType] FROM workitems WHERE [System.TeamProject] = @project AND [System.AssignedTo] = @me AND [System.State] NOT IN ('Closed', 'Done', 'Removed') ORDER BY [System.ChangedDate] DESC"
+    help: The import dialog starts with it, and auto-pull runs it.
+
+# Epics and Features group work; they are never imported.
+types:
+  default: work
+  containers: [Epic, Feature]
+
+states:
+  done: [Closed, Done, Removed, Resolved, Completed]
+
+issue_url: "{settings.org}/{settings.project}/_workitems/edit/{id}"
+
+commands:
+  search:
+    run: [az, boards, query, --wiql, "{query}", --org, "{settings.org}", --project, "{settings.project}",
+          --output, json]
+    map:
+      items: "$"
+      id: id
+      key: "#{id}"
+      title: fields["System.Title"]
+      type: fields["System.WorkItemType"]
+      state: fields["System.State"]
+  fetch:
+    run: [az, boards, work-item, show, --id, "{id}", --org, "{settings.org}", --output, json]
+    map:
+      item: "$"
+      id: id
+      key: "#{id}"
+      title: fields["System.Title"]
+      body: { from: 'fields["System.Description"]', transform: html_to_markdown }
+      type: fields["System.WorkItemType"]
+      state: fields["System.State"]
+      parent: fields["System.Parent"]
+      priority: fields["Microsoft.VSTS.Common.Priority"]

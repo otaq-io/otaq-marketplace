@@ -1,0 +1,59 @@
+[
+  {
+    "key": "PAY-12",
+    "fields": {
+      "summary": "Card declined message",
+      "status": {
+        "name": "To Do",
+        "statusCategory": {
+          "key": "new"
+        }
+      },
+      "issuetype": {
+        "name": "Story"
+      },
+      "priority": {
+        "name": "High"
+      },
+      "parent": {
+        "key": "PAY-3"
+      }
+    }
+  },
+  {
+    "key": "PAY-3",
+    "fields": {
+      "summary": "Checkout",
+      "status": {
+        "name": "In Progress",
+        "statusCategory": {
+          "key": "indeterminate"
+        }
+      },
+      "issuetype": {
+        "name": "Epic"
+      },
+      "priority": {
+        "name": "Medium"
+      }
+    }
+  },
+  {
+    "key": "PAY-9",
+    "fields": {
+      "summary": "Old",
+      "status": {
+        "name": "Done",
+        "statusCategory": {
+          "key": "done"
+        }
+      },
+      "issuetype": {
+        "name": "Bug"
+      },
+      "priority": {
+        "name": "Low"
+      }
+    }
+  }
+]

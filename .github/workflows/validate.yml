@@ -1,0 +1,39 @@
+# Every pull request: each plugin keeps the marketplace's rules, and its recorded CLI output maps to the issues it
+# expects, checked by Otaq's own code on macOS, Linux and Windows.
+name: validate
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: pip install pyyaml check-jsonschema
+      - run: python3 scripts/marketplace.py validate --base "origin/${{ github.base_ref || 'main' }}"
+      - name: Manifests match the schema
+        run: check-jsonschema --schemafile plugins/plugin.schema.json plugins/*/plugin.yaml
+  fixtures:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: otaq-marketplace
+      - uses: actions/checkout@v4
+        with:
+          repository: otaq-io/otaq
+          path: otaq
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Map every plugin's fixtures with Otaq's code
+        working-directory: otaq
+        env:
+          OTAQ_MARKETPLACE: ${{ github.workspace }}/otaq-marketplace
+        run: cargo test -p otaq-core --test suite -- tracker_plugins::marketplace_plugins_map_their_fixtures

@@ -1,0 +1,23 @@
+[
+  {
+    "number": 12,
+    "title": "Fix login on Safari",
+    "url": "https://github.com/acme/shop/issues/12",
+    "state": "OPEN",
+    "labels": [
+      {
+        "name": "bug"
+      },
+      {
+        "name": "P1"
+      }
+    ]
+  },
+  {
+    "number": 13,
+    "title": "Add SSO",
+    "url": "https://github.com/acme/shop/issues/13",
+    "state": "OPEN",
+    "labels": []
+  }
+]

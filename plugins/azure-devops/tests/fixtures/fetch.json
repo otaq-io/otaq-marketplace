@@ -1,0 +1,11 @@
+{
+  "id": 4021,
+  "fields": {
+    "System.Title": "Export orders",
+    "System.Description": "<div>Export the <b>orders</b> as CSV.</div><ul><li>date range</li><li>status</li></ul>",
+    "System.State": "New",
+    "System.WorkItemType": "User Story",
+    "System.Parent": 4000,
+    "Microsoft.VSTS.Common.Priority": 2
+  }
+}

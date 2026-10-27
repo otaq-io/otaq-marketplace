@@ -1,0 +1,68 @@
+{
+  "key": "PAY-12",
+  "fields": {
+    "summary": "Card declined message",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Show "
+            },
+            {
+              "type": "text",
+              "text": "why",
+              "marks": [
+                {
+                  "type": "strong"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": " a card was declined."
+            }
+          ]
+        },
+        {
+          "type": "bulletList",
+          "content": [
+            {
+              "type": "listItem",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "insufficient funds"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "status": {
+      "name": "To Do",
+      "statusCategory": {
+        "key": "new"
+      }
+    },
+    "issuetype": {
+      "name": "Story"
+    },
+    "priority": {
+      "name": "High"
+    },
+    "parent": {
+      "key": "PAY-3"
+    }
+  }
+}

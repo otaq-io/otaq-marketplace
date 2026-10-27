@@ -1,0 +1,15 @@
+{
+  "id": "4021",
+  "key": "#4021",
+  "url": "https://dev.azure.com/acme/My%20Shop/_workitems/edit/4021",
+  "title": "Export orders",
+  "body": "Export the **orders** as CSV.\n\n- date range\n- status",
+  "type": "User Story",
+  "type_category": "work",
+  "state": "New",
+  "state_category": "open",
+  "parent": {
+    "key": "4000"
+  },
+  "priority": 2
+}

@@ -1,0 +1,29 @@
+[
+  {
+    "id": 4021,
+    "fields": {
+      "System.Id": 4021,
+      "System.Title": "Export orders",
+      "System.State": "New",
+      "System.WorkItemType": "User Story"
+    }
+  },
+  {
+    "id": 4000,
+    "fields": {
+      "System.Id": 4000,
+      "System.Title": "Reporting",
+      "System.State": "Active",
+      "System.WorkItemType": "Feature"
+    }
+  },
+  {
+    "id": 3990,
+    "fields": {
+      "System.Id": 3990,
+      "System.Title": "Old bug",
+      "System.State": "Closed",
+      "System.WorkItemType": "Bug"
+    }
+  }
+]

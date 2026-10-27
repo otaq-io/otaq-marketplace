@@ -1,0 +1,38 @@
+# Every push to main: each plugin version with no tag yet is released as `<id>-<version>.json` under the tag
+# `plugins/<id>-v<version>`, and `plugins/index.json` lists it with its SHA256. Otaq reads that index.
+name: release
+on:
+  push:
+    branches: [main]
+    paths: ["plugins/**"]
+permissions:
+  contents: write
+concurrency: release
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: pip install pyyaml
+      - run: python3 scripts/marketplace.py release --repo "${{ github.repository }}"
+      - name: Tag, release and commit the index
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          count=$(python3 -c "import json; print(len(json.load(open('dist/releases.json'))))")
+          if [ "$count" = "0" ]; then echo "nothing new"; exit 0; fi
+          git config user.name "otaq-marketplace[bot]"
+          git config user.email "actions@users.noreply.github.com"
+          python3 - <<'PY'
+          import json, subprocess
+          for r in json.load(open("dist/releases.json")):
+              subprocess.run(["git", "tag", r["tag"]], check=True)
+              subprocess.run(["git", "push", "origin", r["tag"]], check=True)
+              subprocess.run(["gh", "release", "create", r["tag"], r["asset"], "--title", r["title"],
+                              "--notes", "Released by the marketplace's CI."], check=True)
+          PY
+          git add plugins/index.json
+          git commit -m "Index: new plugin releases"
+          git push

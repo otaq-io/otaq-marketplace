@@ -1,0 +1,38 @@
+[
+  {
+    "id": "PAY-12",
+    "key": "PAY-12",
+    "url": "https://acme.atlassian.net/browse/PAY-12",
+    "title": "Card declined message",
+    "type": "Story",
+    "type_category": "work",
+    "state": "To Do",
+    "state_category": "open",
+    "parent": {
+      "key": "PAY-3"
+    },
+    "priority": 2
+  },
+  {
+    "id": "PAY-3",
+    "key": "PAY-3",
+    "url": "https://acme.atlassian.net/browse/PAY-3",
+    "title": "Checkout",
+    "type": "Epic",
+    "type_category": "container",
+    "state": "In Progress",
+    "state_category": "open",
+    "priority": 3
+  },
+  {
+    "id": "PAY-9",
+    "key": "PAY-9",
+    "url": "https://acme.atlassian.net/browse/PAY-9",
+    "title": "Old",
+    "type": "Bug",
+    "type_category": "work",
+    "state": "Done",
+    "state_category": "done",
+    "priority": 4
+  }
+]

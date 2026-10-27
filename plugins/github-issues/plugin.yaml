@@ -1,0 +1,71 @@
+# GitHub Issues: import a repository's open issues as Otaq tickets, through the GitHub CLI and its login.
+id: github-issues
+name: GitHub Issues
+version: 1.0.0
+protocol: 1
+otaq: ">=0.1.0, <2.0.0"
+description: Import a repository's open issues as tickets, through the GitHub CLI (gh).
+license: FSL-1.1-MIT
+maintainers: [otaq-io]
+homepage: https://github.com/otaq-io/otaq-marketplace/tree/HEAD/plugins/github-issues
+provides: [ticket_source]
+capabilities: [import, refresh, auto_pull]
+query_label: GitHub search (is:open label:bug)
+
+requires:
+  - id: gh
+    name: GitHub CLI
+    check: [gh, --version]
+    login_check: [gh, auth, status]
+    login: [gh, auth, login]
+    install:
+      macos: brew install gh
+      linux: https://github.com/cli/cli#installation
+      windows: winget install --id GitHub.cli
+
+settings:
+  - key: repo
+    label: Repository
+    required: true
+    format: owner_repo
+    scope: project
+    placeholder: owner/name
+  - key: query
+    label: Saved search
+    default: "is:open assignee:@me"
+    help: The import dialog starts with it, and auto-pull runs it.
+  - key: priority_labels
+    label: Priority labels
+    type: map
+    default: { P0: urgent, P1: high, P2: normal, P3: low }
+    help: "Labels that set the ticket's priority: one label = urgent, high, normal or low per line."
+
+# GitHub issues have no epics: every issue is a work item.
+types:
+  default: work
+
+issue_url: "https://github.com/{settings.repo}/issues/{id}"
+
+commands:
+  search:
+    run: [gh, issue, list, -R, "{settings.repo}", --search, "{query}", --limit, "{limit}",
+          --json, "number,title,url,state,labels"]
+    map:
+      items: "$"
+      id: number
+      key: "#{number}"
+      url: url
+      title: title
+      state: state
+      priority: { from: "labels[].name", via: settings.priority_labels }
+  fetch:
+    run: [gh, issue, view, "{id}", -R, "{settings.repo}", --json, "number,title,body,url,state,labels"]
+    map:
+      item: "$"
+      id: number
+      key: "#{number}"
+      url: url
+      title: title
+      body: body
+      state: state
+      priority: { from: "labels[].name", via: settings.priority_labels }

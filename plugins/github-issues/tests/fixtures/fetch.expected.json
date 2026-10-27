@@ -1,0 +1,11 @@
+{
+  "id": "12",
+  "key": "#12",
+  "url": "https://github.com/acme/shop/issues/12",
+  "title": "Fix login on Safari",
+  "body": "Users can't log in.\n\n- Safari 18",
+  "type_category": "work",
+  "state": "OPEN",
+  "state_category": "open",
+  "priority": 2
+}

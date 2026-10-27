@@ -1,0 +1,32 @@
+[
+  {
+    "id": "4021",
+    "key": "#4021",
+    "url": "https://dev.azure.com/acme/My%20Shop/_workitems/edit/4021",
+    "title": "Export orders",
+    "type": "User Story",
+    "type_category": "work",
+    "state": "New",
+    "state_category": "open"
+  },
+  {
+    "id": "4000",
+    "key": "#4000",
+    "url": "https://dev.azure.com/acme/My%20Shop/_workitems/edit/4000",
+    "title": "Reporting",
+    "type": "Feature",
+    "type_category": "container",
+    "state": "Active",
+    "state_category": "open"
+  },
+  {
+    "id": "3990",
+    "key": "#3990",
+    "url": "https://dev.azure.com/acme/My%20Shop/_workitems/edit/3990",
+    "title": "Old bug",
+    "type": "Bug",
+    "type_category": "work",
+    "state": "Closed",
+    "state_category": "done"
+  }
+]

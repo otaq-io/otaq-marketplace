@@ -1,0 +1,21 @@
+[
+  {
+    "id": "12",
+    "key": "#12",
+    "url": "https://github.com/acme/shop/issues/12",
+    "title": "Fix login on Safari",
+    "type_category": "work",
+    "state": "OPEN",
+    "state_category": "open",
+    "priority": 2
+  },
+  {
+    "id": "13",
+    "key": "#13",
+    "url": "https://github.com/acme/shop/issues/13",
+    "title": "Add SSO",
+    "type_category": "work",
+    "state": "OPEN",
+    "state_category": "open"
+  }
+]

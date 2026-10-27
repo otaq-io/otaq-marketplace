@@ -1,0 +1,407 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/otaq-io/otaq-marketplace/plugins/plugin.schema.json",
+  "title": "Otaq plugin manifest (plugin.yaml), protocol 1",
+  "description": "A declarative ticket source: the vendor CLIs it runs and how their JSON output becomes issues. See docs/marketplace.md in the otaq repository.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "version",
+    "protocol",
+    "otaq",
+    "license",
+    "provides",
+    "capabilities",
+    "commands"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,39}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?$"
+    },
+    "protocol": {
+      "const": 1
+    },
+    "otaq": {
+      "type": "string",
+      "description": "The Otaq versions it works with, a semver range: \">=0.1.0, <2.0.0\""
+    },
+    "description": {
+      "type": "string"
+    },
+    "license": {
+      "enum": [
+        "MIT",
+        "MIT-0",
+        "Apache-2.0",
+        "BSD-2-Clause",
+        "BSD-3-Clause",
+        "ISC",
+        "0BSD",
+        "Zlib",
+        "MPL-2.0",
+        "LGPL-2.1-only",
+        "LGPL-2.1-or-later",
+        "LGPL-3.0-only",
+        "LGPL-3.0-or-later",
+        "GPL-2.0-only",
+        "GPL-2.0-or-later",
+        "GPL-3.0-only",
+        "GPL-3.0-or-later",
+        "AGPL-3.0-only",
+        "AGPL-3.0-or-later",
+        "EPL-2.0",
+        "EUPL-1.2",
+        "Unlicense",
+        "FSL-1.1-MIT",
+        "FSL-1.1-ALv2",
+        "FSL-1.1-Apache-2.0"
+      ]
+    },
+    "maintainers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "homepage": {
+      "type": "string"
+    },
+    "provides": {
+      "type": "array",
+      "items": {
+        "const": "ticket_source"
+      },
+      "minItems": 1
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "import",
+          "refresh",
+          "auto_pull"
+        ]
+      },
+      "contains": {
+        "const": "import"
+      }
+    },
+    "query_label": {
+      "type": "string"
+    },
+    "issue_url": {
+      "type": "string"
+    },
+    "requires": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "check"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "check": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "login_check": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "login": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "install": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "macos": {
+                "type": "string"
+              },
+              "linux": {
+                "type": "string"
+              },
+              "windows": {
+                "type": "string"
+              }
+            }
+          },
+          "extension": {
+            "type": "object",
+            "required": [
+              "name",
+              "check",
+              "install"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "check": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              },
+              "install": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "key",
+          "label"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "string",
+              "map"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "default": {},
+          "format": {
+            "enum": [
+              "text",
+              "slug",
+              "owner_repo",
+              "host",
+              "url"
+            ]
+          },
+          "scope": {
+            "enum": [
+              "any",
+              "project"
+            ]
+          },
+          "placeholder": {
+            "type": "string"
+          },
+          "help": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "types": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default": {
+          "enum": [
+            "work",
+            "container"
+          ]
+        },
+        "containers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "work": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "states": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "done": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "commands": {
+      "type": "object",
+      "required": [
+        "search",
+        "fetch"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "search": {
+          "$ref": "#/$defs/command"
+        },
+        "fetch": {
+          "$ref": "#/$defs/command"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "field": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "required": [
+            "from"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "from": {
+              "type": "string"
+            },
+            "transform": {
+              "enum": [
+                "adf_to_markdown",
+                "html_to_markdown"
+              ]
+            },
+            "via": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "pattern": "^settings\\."
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "mapping": {
+      "type": "object",
+      "required": [
+        "id",
+        "title"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/field"
+        },
+        "key": {
+          "$ref": "#/$defs/field"
+        },
+        "url": {
+          "$ref": "#/$defs/field"
+        },
+        "title": {
+          "$ref": "#/$defs/field"
+        },
+        "body": {
+          "$ref": "#/$defs/field"
+        },
+        "type": {
+          "$ref": "#/$defs/field"
+        },
+        "state": {
+          "$ref": "#/$defs/field"
+        },
+        "state_category": {
+          "$ref": "#/$defs/field"
+        },
+        "parent": {
+          "$ref": "#/$defs/field"
+        },
+        "parent_url": {
+          "$ref": "#/$defs/field"
+        },
+        "priority": {
+          "$ref": "#/$defs/field"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/field"
+        },
+        "items": {
+          "type": "string"
+        },
+        "item": {
+          "type": "string"
+        }
+      }
+    },
+    "command": {
+      "type": "object",
+      "required": [
+        "run",
+        "map"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "map": {
+          "$ref": "#/$defs/mapping"
+        }
+      }
+    }
+  }
+}
