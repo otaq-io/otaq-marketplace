@@ -1,5 +1,87 @@
 {
   "schema": 1,
   "kind": "plugins",
-  "plugins": []
+  "plugins": [
+    {
+      "id": "azure-devops",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "protocol": 1,
+          "otaq": ">=0.1.0, <2.0.0",
+          "url": "https://github.com/otaq-io/otaq-marketplace/releases/download/plugins/azure-devops-v1.0.0/azure-devops-1.0.0.json",
+          "sha256": "f8ee38753e713deb321f794499b3d4daafcf9792d3eac49ccf3f8584787c6c07",
+          "tag": "plugins/azure-devops-v1.0.0",
+          "requires": [
+            "az"
+          ],
+          "capabilities": [
+            "import",
+            "refresh",
+            "auto_pull"
+          ]
+        }
+      ],
+      "name": "Azure DevOps Boards",
+      "description": "Import Azure Boards user stories, tasks and bugs as tickets, through the Azure CLI (az boards).",
+      "license": "FSL-1.1-MIT",
+      "maintainers": [
+        "otaq-io"
+      ]
+    },
+    {
+      "id": "github-issues",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "protocol": 1,
+          "otaq": ">=0.1.0, <2.0.0",
+          "url": "https://github.com/otaq-io/otaq-marketplace/releases/download/plugins/github-issues-v1.0.0/github-issues-1.0.0.json",
+          "sha256": "6491f0458696b35dfd46e2a3213c57785369b15152c420fdd60b5a268d218716",
+          "tag": "plugins/github-issues-v1.0.0",
+          "requires": [
+            "gh"
+          ],
+          "capabilities": [
+            "import",
+            "refresh",
+            "auto_pull"
+          ]
+        }
+      ],
+      "name": "GitHub Issues",
+      "description": "Import a repository's open issues as tickets, through the GitHub CLI (gh).",
+      "license": "FSL-1.1-MIT",
+      "maintainers": [
+        "otaq-io"
+      ]
+    },
+    {
+      "id": "jira",
+      "versions": [
+        {
+          "version": "1.0.0",
+          "protocol": 1,
+          "otaq": ">=0.1.0, <2.0.0",
+          "url": "https://github.com/otaq-io/otaq-marketplace/releases/download/plugins/jira-v1.0.0/jira-1.0.0.json",
+          "sha256": "a0077f138d383e891ad078c48663f135687ceaf32c82355848d1c622ccc5ee4b",
+          "tag": "plugins/jira-v1.0.0",
+          "requires": [
+            "acli"
+          ],
+          "capabilities": [
+            "import",
+            "refresh",
+            "auto_pull"
+          ]
+        }
+      ],
+      "name": "Jira",
+      "description": "Import Jira Cloud stories, tasks and bugs as tickets, through the Atlassian CLI (acli).",
+      "license": "FSL-1.1-MIT",
+      "maintainers": [
+        "otaq-io"
+      ]
+    }
+  ]
 }
