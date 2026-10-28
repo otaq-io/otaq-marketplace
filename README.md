@@ -1,45 +1,36 @@
 # Otaq marketplace
 
-Plugins for [Otaq](https://github.com/otaq-io/otaq), which runs coding agents on your tickets. A plugin connects Otaq
-to a tool your team already uses, through that tool's own command-line program and your login: Otaq stores no tokens.
+The plugin marketplace for [Otaq](https://github.com/otaq-io/otaq), which runs coding agents on your tickets.
+Plugins are add-ons that Otaq runs itself, with no agent involved. A plugin connects Otaq to a tool your team already
+uses, through that tool's own command-line program and your login: Otaq stores no tokens.
 
-Otaq runs plugins itself; no agent is involved. The first plugins connect issue trackers: you pick issues in Otaq and
-they become Backlog tickets, with the issue's key as their External ID. Otaq can refresh them later and pull new ones
-in the background. More kinds will follow: see [Planned plugins](#planned-plugins).
+Every plugin here is open source and readable, is reviewed before it is merged, and is checked against the SHA256 in
+this repository's index before Otaq reads it; Otaq shows a consent screen before every install and update.
 
-| Plugin | Connects | Uses |
-|---|---|---|
-| [`github-issues`](plugins/github-issues) | GitHub Issues | `gh` |
-| [`jira`](plugins/jira) | Jira Cloud | `acli` (Atlassian CLI) |
-| [`azure-devops`](plugins/azure-devops) | Azure DevOps Boards | `az` with the `azure-devops` extension |
+| Plugin | Kind | Connects | Uses |
+|---|---|---|---|
+| [`github-issues`](plugins/github-issues) | ticket source | GitHub Issues | `gh` |
+| [`jira`](plugins/jira) | ticket source | Jira Cloud | `acli` (Atlassian CLI) |
+| [`azure-devops`](plugins/azure-devops) | ticket source | Azure DevOps Boards | `az` with the `azure-devops` extension |
+
+More kinds are planned: context for agents (Notion, Confluence, Figma), notifications, pull request providers, CI
+status and previews. See [Kinds of plugin](#kinds-of-plugin).
 
 ## Contents
 
-- [Using plugins](#using-plugins)
-- [How a plugin works](#how-a-plugin-works)
+- [Using the marketplace](#using-the-marketplace)
 - [Trust and safety](#trust-and-safety)
 - [Installing and updating](#installing-and-updating)
-- [Agents and plugins](#agents-and-plugins)
+- [How a plugin works](#how-a-plugin-works)
 - [Writing a plugin](#writing-a-plugin)
 - [Adding a plugin](#adding-a-plugin)
 - [Releasing](#releasing)
-- [Planned plugins](#planned-plugins)
+- [Kinds of plugin](#kinds-of-plugin)
+- [Ticket sources](#ticket-sources)
 - [Layout](#layout)
 - [License](#license)
 
-## Using plugins
-
-A tracker plugin offers up to three features:
-
-| Feature | What it does |
-|---|---|
-| **Import** | Search the tracker, pick issues, and create Backlog tickets. Each ticket gets the issue's key as its External ID (e.g. `PAY-123`), its priority and a link back to the issue. |
-| **Refresh** | Fetch an imported ticket's title and description again, when the issue changed after you imported it. |
-| **Auto-pull** | Run a saved search every few minutes (15 by default) and add new issues to the Backlog. Off unless you turn it on for a project. |
-
-The first plugins are **read-only**: they never change anything in the tracker. Only **work that is ready to be worked
-on** is imported: open stories, tasks, bugs and sub-tasks. Epics and other containers are never imported; a ticket's
-epic is shown as a link on it.
+## Using the marketplace
 
 **Settings → Plugins** is where you manage plugins:
 
@@ -47,56 +38,6 @@ epic is shown as a link on it.
 - add another marketplace by its GitHub URL, or a plugin from a folder on disk;
 - set **global defaults** for each plugin's settings;
 - check each plugin's command-line tools, with **Log in** (and **Add extension**) when one needs it.
-
-**Project settings → Plugins** is where a project uses a plugin: turn it on and fill in its settings (site,
-repository, saved search…). An empty field uses the global default. A project can use several plugins, each set up
-once; one search can cover several projects or repositories (e.g. `project in (PAY, AUTH)` in Jira).
-
-**On the board**, **New ticket ▾ → Import from \<plugin\>** opens a search:
-
-```
-Import from Jira
- [sprint in openSprints()         ] [Search]
- [x] PAY-123  Fix login        parent PAY-100
- [x] PAY-124  Add SSO
- [ ] PAY-130  Old bug          already imported
- [ ] PAY-131  Flaky test       dismissed · import again
-                                   [Import 2]
-```
-
-- A search shows at most **100 issues**; with more, narrow it.
-- Issues already imported are greyed out.
-- Deleting an imported ticket marks its issue **dismissed**: auto-pull never brings it back, but you can import it
-  again from this dialog.
-
-**Imported tickets** show their tracker issue on the card ("Jira · PAY-12"), and the ticket's editor has **Open in
-Jira ↗**, the quick way to update the issue yourself.
-
-**Refresh from tracker** compares each field (title and description) as imported, as the ticket has it now, and as
-the tracker has it now. A field you didn't edit takes the tracker's text silently; a field both sides changed is shown
-side by side, and you pick **Use tracker** or **Keep mine**. Nothing is overwritten without asking.
-
-**Auto-pull** runs while Otaq's background service runs, also with the window closed to the tray. It only adds
-tickets to the Backlog: it never moves, starts or deletes anything, and it skips issues already imported or dismissed.
-A failed pull shows its reason in the project's plugin settings.
-
-## How a plugin works
-
-A plugin contains no code. It is a **manifest** (`plugin.yaml`) that tells Otaq which command-line tool to run and how
-to read its JSON output. It relies on the tool's own login:
-
-- **Otaq stores no tokens.** You log in with the vendor's CLI (`gh auth login`, `az login`, `acli jira auth login`);
-  **Log in** opens that command in Otaq's terminal, and the CLI usually finishes the login in your browser.
-- **Your project's environment variables are not passed to plugins.** Plugin commands see only your normal
-  environment.
-
-Otaq runs the CLI directly, never through a shell, so the same plugin works on macOS, Linux and Windows. Each command
-has a time limit (30 seconds for a search or a fetch, 15 for a check) and capped output.
-
-A tracker plugin has two commands: **`search`** lists issues for a query, and **`fetch`** reads one issue in full.
-Azure DevOps, for example, searches with `az boards query`, and Otaq then fetches each issue you pick with
-`az boards work-item show`. Descriptions in a tracker's own format (Jira's ADF, Azure DevOps' HTML) become Markdown
-through Otaq's **built-in transforms**, so plugins stay declarative.
 
 ## Trust and safety
 
@@ -134,12 +75,23 @@ installs until you agree. A Local plugin whose commands change is stopped until 
 - Versions that don't support your Otaq version are hidden.
 - **Removing a plugin** keeps the tickets you imported, with their links to the tracker.
 
-## Agents and plugins
+## How a plugin works
 
-Otaq's Project agent can search and import through the plugins you turned on for its project, with
-`otaq plugins search <plugin> ["<query>"]` and `otaq plugins import <plugin> <id>…`. For example: "import this
-sprint's stories and plan them". Imports land in the Backlog. Ticket agents can't use plugins, and no agent can
-install, configure or approve one.
+A plugin contains no code. It is a **manifest** (`plugin.yaml`) that tells Otaq which command-line tool to run and how
+to read its JSON output. It relies on the tool's own login:
+
+- **Otaq stores no tokens.** You log in with the vendor's CLI (`gh auth login`, `az login`, `acli jira auth login`);
+  **Log in** opens that command in Otaq's terminal, and the CLI usually finishes the login in your browser.
+- **Your project's environment variables are not passed to plugins.** Plugin commands see only your normal
+  environment.
+
+Otaq runs the CLI directly, never through a shell, so the same plugin works on macOS, Linux and Windows. Each command
+has a time limit (30 seconds for a search or a fetch, 15 for a check) and capped output.
+
+A tracker plugin has two commands: **`search`** lists issues for a query, and **`fetch`** reads one issue in full.
+Azure DevOps, for example, searches with `az boards query`, and Otaq then fetches each issue you pick with
+`az boards work-item show`. Descriptions in a tracker's own format (Jira's ADF, Azure DevOps' HTML) become Markdown
+through Otaq's **built-in transforms**, so plugins stay declarative.
 
 ## Writing a plugin
 
@@ -257,10 +209,10 @@ Change a plugin, bump its `version`, and merge. On `main`, CI releases each new 
 `plugins/<id>-v<version>`, as one `<id>-<version>.json` file holding the plugin's files, and adds it to
 `plugins/index.json` with its SHA256. Otaq checks that hash before installing.
 
-## Planned plugins
+## Kinds of plugin
 
-None of these is built yet, and the list will change. The manifest's `provides:` field already has room for each kind;
-Otaq runs `ticket_source` today. Proposals and pull requests are welcome, starting with the ticket sources, which
+A plugin says what it is in its manifest's `provides:` field. Otaq runs `ticket_source` today; the others aren't built
+yet, and the list will change. Proposals and pull requests are welcome, starting with the ticket sources, which
 need nothing new from Otaq.
 
 | Kind (`provides:`) | What it does | Examples |
@@ -284,6 +236,61 @@ Content, which runs no code, will get its own top-level folders next to `plugins
 - `instructions/`: agent instruction packs, such as a house style for a language.
 - `themes/`: Otaq themes.
 
+## Ticket sources
+
+The kind of plugin Otaq runs today: it brings work into Otaq as tickets.
+
+A ticket source offers up to three features:
+
+| Feature | What it does |
+|---|---|
+| **Import** | Search the tracker, pick issues, and create Backlog tickets. Each ticket gets the issue's key as its External ID (e.g. `PAY-123`), its priority and a link back to the issue. |
+| **Refresh** | Fetch an imported ticket's title and description again, when the issue changed after you imported it. |
+| **Auto-pull** | Run a saved search every few minutes (15 by default) and add new issues to the Backlog. Off unless you turn it on for a project. |
+
+The first plugins are **read-only**: they never change anything in the tracker. Only **work that is ready to be worked
+on** is imported: open stories, tasks, bugs and sub-tasks. Epics and other containers are never imported; a ticket's
+epic is shown as a link on it.
+
+**Project settings → Plugins** is where a project uses a plugin: turn it on and fill in its settings (site,
+repository, saved search…). An empty field uses the global default. A project can use several plugins, each set up
+once; one search can cover several projects or repositories (e.g. `project in (PAY, AUTH)` in Jira).
+
+**On the board**, **New ticket ▾ → Import from \<plugin\>** opens a search:
+
+```
+Import from Jira
+ [sprint in openSprints()         ] [Search]
+ [x] PAY-123  Fix login        parent PAY-100
+ [x] PAY-124  Add SSO
+ [ ] PAY-130  Old bug          already imported
+ [ ] PAY-131  Flaky test       dismissed · import again
+                                   [Import 2]
+```
+
+- A search shows at most **100 issues**; with more, narrow it.
+- Issues already imported are greyed out.
+- Deleting an imported ticket marks its issue **dismissed**: auto-pull never brings it back, but you can import it
+  again from this dialog.
+
+**Imported tickets** show their tracker issue on the card ("Jira · PAY-12"), and the ticket's editor has **Open in
+Jira ↗**, the quick way to update the issue yourself.
+
+**Refresh from tracker** compares each field (title and description) as imported, as the ticket has it now, and as
+the tracker has it now. A field you didn't edit takes the tracker's text silently; a field both sides changed is shown
+side by side, and you pick **Use tracker** or **Keep mine**. Nothing is overwritten without asking.
+
+**Auto-pull** runs while Otaq's background service runs, also with the window closed to the tray. It only adds
+tickets to the Backlog: it never moves, starts or deletes anything, and it skips issues already imported or dismissed.
+A failed pull shows its reason in the project's plugin settings.
+
+### Agents and ticket sources
+
+Otaq's Project agent can search and import through the plugins you turned on for its project, with
+`otaq plugins search <plugin> ["<query>"]` and `otaq plugins import <plugin> <id>…`. For example: "import this
+sprint's stories and plan them". Imports land in the Backlog. Ticket agents can't use plugins, and no agent can
+install, configure or approve one.
+
 ## Layout
 
 Each kind of content has its own folder, and everything of that kind lives under it:
@@ -297,7 +304,7 @@ plugins/
     README.md
     LICENSE
     tests/fixtures/     recorded CLI output and the issues Otaq should map it to
-skills/  flows/  …      later (see Planned plugins)
+skills/  flows/  …      later (see Kinds of plugin)
 scripts/marketplace.py  the CI's checks and releases
 ```
 
